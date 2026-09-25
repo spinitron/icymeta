@@ -41,7 +41,7 @@ function streamRead($stream, int $count): string
     $buffer = '';
     while (strlen($buffer) < $count) {
         $chunk = fread($stream, $count - strlen($buffer));
-        if ($chunk === false) {
+        if ($chunk === false || $chunk === '') {
             die("Failed to read from stream\n");
         }
         $buffer .= $chunk;
@@ -57,7 +57,7 @@ while (true) {
         $metadata = streamRead($stream, $metaLength);
         echo (new \DateTime())->format('H:i:s ');
         if (preg_match("{StreamTitle='(.*?)';}i", $metadata, $matches)) {
-            echo $matches[1];
+            echo str_replace(['\\\'', '\\\\'], ["'", '\\'], $matches[1]);
         } else {
             echo 'Metadata parse error: ';
             var_dump($metadata);
